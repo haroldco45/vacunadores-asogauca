@@ -98,8 +98,8 @@ function traducir() {
 }
 
 const ESTADOS = {
-  es: { pendiente: "Pendiente", aprobado: "Aprobado", despachado: "Despachado", entregado: "Entregado", rechazado: "Rechazado", cancelado: "Cancelado", activo: "Activo", inactivo: "Inactivo", agotado: "Sin existencia", poco: "Pocas unidades", disponible: "Disponible" },
-  en: { pendiente: "Pending", aprobado: "Approved", despachado: "Dispatched", entregado: "Delivered", rechazado: "Rejected", cancelado: "Cancelled", activo: "Active", inactivo: "Inactive", agotado: "Out of stock", poco: "Low stock", disponible: "Available" },
+  es: { pendiente: "Pendiente", aprobado: "Aprobado", despachado: "Despachado", entregado: "Entregado", rechazado: "Rechazado", cancelado: "Cancelado", activo: "Activo", inactivo: "Inactivo", agotado: "Por confirmar", poco: "Pocas unidades", disponible: "Disponible" },
+  en: { pendiente: "Pending", aprobado: "Approved", despachado: "Dispatched", entregado: "Delivered", rechazado: "Rejected", cancelado: "Cancelled", activo: "Active", inactivo: "Inactive", agotado: "To be confirmed", poco: "Low stock", disponible: "Available" },
 };
 const est = (e) => (ESTADOS[idioma()] || ESTADOS.es)[e] || e;
 

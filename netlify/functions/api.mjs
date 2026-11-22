@@ -47,41 +47,103 @@ const num = (v) => { const n = Math.round(Number(v)); return Number.isFinite(n) 
 class Fallo extends Error { constructor(m, c = 400) { super(m); this.code = c; } }
 
 // ---------- datos base ----------
+// Catálogo de lo que usa un vacunador en el ciclo. Si se agregan productos nuevos aquí,
+// se suben solos al inventario (sin tocar las existencias que ya cargó la coordinación).
+const CATALOGO_VERSION = 2;
 const CATALOGO_INICIAL = [
-  ["Jeringa automática (inyector) 50 ml", "Inyectores", "unidad", true, "jeringa"],
-  ["Jeringa automática (inyector) 5 ml – brucelosis", "Inyectores", "unidad", true, "jeringa"],
+  // [nombre, categoría, unidad, ¿se devuelve?, foto]
+  ["Jeringa automática metálica 50 ml – aftosa", "Inyectores", "unidad", true, "jeringa"],
+  ["Jeringa automática 20 ml", "Inyectores", "unidad", true, "jeringa"],
+  ["Jeringa automática 5 ml – brucelosis", "Inyectores", "unidad", true, "jeringa"],
   ["Pistola dosificadora con tubo para frasco", "Inyectores", "unidad", true, "jeringa"],
-  ["Kit de empaques (O-rings) para inyector", "Repuestos", "kit", false, "repuesto"],
-  ["Émbolo de repuesto", "Repuestos", "unidad", false, "repuesto"],
-  ["Cilindro / barril de repuesto", "Repuestos", "unidad", false, "repuesto"],
-  ["Resorte de repuesto", "Repuestos", "unidad", false, "repuesto"],
+  ["Jeringas desechables 5 ml (caja x 100)", "Inyectores", "caja", false, "bio"],
+  ["Kit de empaques (O-rings) jeringa 50 ml", "Repuestos", "kit", false, "repuesto"],
+  ["Kit de empaques (O-rings) jeringa 5 ml", "Repuestos", "kit", false, "repuesto"],
+  ["Émbolo completo", "Repuestos", "unidad", false, "repuesto"],
+  ["Cilindro / barril de vidrio", "Repuestos", "unidad", false, "repuesto"],
+  ["Resorte del émbolo", "Repuestos", "unidad", false, "repuesto"],
   ["Válvulas de entrada y salida", "Repuestos", "par", false, "repuesto"],
-  ["Manguera de alimentación", "Repuestos", "unidad", false, "repuesto"],
   ["Tuerca reguladora de dosis", "Repuestos", "unidad", false, "repuesto"],
+  ["Conector de aguja (Luer)", "Repuestos", "unidad", false, "repuesto"],
+  ["Gatillo / mango", "Repuestos", "unidad", false, "repuesto"],
+  ["Manguera de alimentación", "Repuestos", "unidad", false, "repuesto"],
+  ["Aguja de succión para frasco", "Repuestos", "unidad", false, "repuesto"],
+  ["Lubricante de silicona para jeringas", "Repuestos", "frasco", false, "repuesto"],
   ["Agujas 16G x 1/2\" (caja x 100)", "Agujas", "caja", false, "agujas"],
+  ["Agujas 16G x 3/4\" (caja x 100)", "Agujas", "caja", false, "agujas"],
+  ["Agujas 18G x 1/2\" (caja x 100)", "Agujas", "caja", false, "agujas"],
   ["Agujas 18G x 1\" (caja x 100)", "Agujas", "caja", false, "agujas"],
+  ["Agujas 20G x 1/2\" terneras (caja x 100)", "Agujas", "caja", false, "agujas"],
+  ["Agujas reutilizables de acero (docena)", "Agujas", "docena", false, "agujas"],
   ["Vacuna fiebre aftosa (frasco)", "Biológicos", "frasco", false, "frascos"],
   ["Vacuna bivalente aftosa-rabia (frasco)", "Biológicos", "frasco", false, "frascos"],
-  ["Vacuna brucelosis (frasco)", "Biológicos", "frasco", false, "frascos"],
-  ["Vacuna carbón (frasco)", "Biológicos", "frasco", false, "frascos"],
-  ["Nevera de icopor / termo para vacunas", "Cadena de frío", "unidad", true, "frio"],
+  ["Vacuna brucelosis Cepa 19 (frasco)", "Biológicos", "frasco", false, "frascos"],
+  ["Vacuna brucelosis RB51 (frasco)", "Biológicos", "frasco", false, "frascos"],
+  ["Vacuna carbón bacteridiano (frasco)", "Biológicos", "frasco", false, "frascos"],
+  ["Vacuna carbón sintomático (frasco)", "Biológicos", "frasco", false, "frascos"],
+  ["Diluyente para vacuna (frasco)", "Biológicos", "frasco", false, "frascos"],
+  ["Termo / nevera de icopor para vacunas", "Cadena de frío", "unidad", true, "frio"],
+  ["Nevera rígida de campo", "Cadena de frío", "unidad", true, "frio"],
   ["Pilas de gel refrigerante", "Cadena de frío", "unidad", false, "frio"],
   ["Termómetro para nevera", "Cadena de frío", "unidad", true, "frio"],
-  ["Guantes de nitrilo (caja)", "Bioseguridad", "caja", false, "bio"],
-  ["Algodón (rollo)", "Bioseguridad", "rollo", false, "bio"],
-  ["Alcohol antiséptico", "Bioseguridad", "frasco", false, "bio"],
-  ["Guardián para cortopunzantes", "Bioseguridad", "unidad", false, "bio"],
-  ["Crayón marcador de ganado", "Papelería y marcación", "unidad", false, "marca"],
-  ["Formatos de registro de vacunación (RUV)", "Papelería y marcación", "talonario", false, "marca"],
+  ["Yodopovidona (frasco)", "Desinfección", "frasco", false, "bio"],
+  ["Alcohol antiséptico", "Desinfección", "frasco", false, "bio"],
+  ["Algodón (rollo)", "Desinfección", "rollo", false, "bio"],
+  ["Vaso o recipiente para desinfectar agujas", "Desinfección", "unidad", true, "bio"],
+  ["Guantes de nitrilo (caja)", "Bioseguridad y dotación", "caja", false, "bio"],
+  ["Tapabocas (caja)", "Bioseguridad y dotación", "caja", false, "bio"],
+  ["Guardián para cortopunzantes", "Bioseguridad y dotación", "unidad", false, "bio"],
+  ["Bolsas rojas para residuos", "Bioseguridad y dotación", "paquete", false, "bio"],
+  ["Botas de caucho", "Bioseguridad y dotación", "par", false, "hero1"],
+  ["Overol", "Bioseguridad y dotación", "unidad", false, "hero1"],
+  ["Impermeable / poncho", "Bioseguridad y dotación", "unidad", false, "hero1"],
+  ["Gorra", "Bioseguridad y dotación", "unidad", false, "hero1"],
+  ["Chaleco de identificación", "Bioseguridad y dotación", "unidad", true, "hero1"],
+  ["Linterna", "Bioseguridad y dotación", "unidad", true, "hero1"],
+  ["Pilas AA (par)", "Bioseguridad y dotación", "par", false, "hero1"],
+  ["Repelente", "Bioseguridad y dotación", "frasco", false, "hero1"],
+  ["Bloqueador solar", "Bioseguridad y dotación", "frasco", false, "hero1"],
+  ["Formatos de Registro Único de Vacunación (RUV)", "Registro y marcación", "talonario", false, "marca"],
+  ["Lapiceros", "Registro y marcación", "unidad", false, "marca"],
+  ["Tabla portapapeles", "Registro y marcación", "unidad", true, "marca"],
+  ["Bolsa plástica para documentos", "Registro y marcación", "unidad", false, "marca"],
+  ["Crayón marcador de ganado", "Registro y marcación", "unidad", false, "marca"],
+  ["Pintura en aerosol para marcar ganado", "Registro y marcación", "unidad", false, "marca"],
+  ["Lazo / soga para manejo", "Manejo del ganado", "unidad", true, "inspeccion"],
 ];
 
+const nuevoProd = ([nombre, categoria, unidad, retornable, foto], i) => ({
+  id: "p" + (i + 1), nombre, categoria, unidad, retornable, foto, stock: 0, minimo: 0, activo: true,
+});
+const norm = (t) => String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
 async function getInv(s) {
   let inv = await s.get("inv");
   if (!inv) {
-    inv = CATALOGO_INICIAL.map(([nombre, categoria, unidad, retornable, foto], i) => ({
-      id: "p" + (i + 1), nombre, categoria, unidad, retornable, foto, stock: 0, minimo: 0, activo: true,
-    }));
+    inv = CATALOGO_INICIAL.map(nuevoProd);
     await s.setJSON("inv", inv);
+    await s.setJSON("catv", { v: CATALOGO_VERSION });
+  } else if (((await s.get("catv")) || {}).v !== CATALOGO_VERSION) {
+    // agrega lo que falte del catálogo; los productos de la versión 1 se renombran solos
+    const v1 = { p1: 0, p2: 2, p3: 3, p4: 5, p5: 7, p6: 8, p7: 9, p8: 10, p9: 14, p10: 11, p11: 17, p12: 20, p13: 23, p14: 24, p15: 25, p16: 27, p17: 30, p18: 32, p19: 33, p20: 38, p21: 36, p22: 35, p23: 40, p24: 55, p25: 51 };
+    const nombresV1 = ["Jeringa automática (inyector) 50 ml", "Jeringa automática (inyector) 5 ml – brucelosis", "Pistola dosificadora con tubo para frasco", "Kit de empaques (O-rings) para inyector", "Émbolo de repuesto", "Cilindro / barril de repuesto", "Resorte de repuesto", "Válvulas de entrada y salida", "Manguera de alimentación", "Tuerca reguladora de dosis", "Agujas 16G x 1/2\" (caja x 100)", "Agujas 18G x 1\" (caja x 100)", "Vacuna fiebre aftosa (frasco)", "Vacuna bivalente aftosa-rabia (frasco)", "Vacuna brucelosis (frasco)", "Vacuna carbón (frasco)", "Nevera de icopor / termo para vacunas", "Pilas de gel refrigerante", "Termómetro para nevera", "Guantes de nitrilo (caja)", "Algodón (rollo)", "Alcohol antiséptico", "Guardián para cortopunzantes", "Crayón marcador de ganado", "Formatos de registro de vacunación (RUV)"];
+    for (const p of inv) {
+      const i = nombresV1.indexOf(p.nombre);
+      if (i >= 0 && v1["p" + (i + 1)] !== undefined && p.id === "p" + (i + 1)) {
+        const [nombre, categoria, unidad, retornable, foto] = CATALOGO_INICIAL[v1[p.id]];
+        Object.assign(p, { nombre, categoria, unidad, retornable, foto });
+      }
+    }
+    const tiene = new Set(inv.map((p) => norm(p.nombre)));
+    CATALOGO_INICIAL.forEach((c, i) => {
+      if (tiene.has(norm(c[0]))) return;
+      const p = nuevoProd(c, i);
+      p.id = "c" + (i + 1);
+      inv.push(p);
+    });
+    const orden = new Map(CATALOGO_INICIAL.map((c, i) => [norm(c[0]), i]));
+    inv.sort((a, b) => (orden.get(norm(a.nombre)) ?? 999) - (orden.get(norm(b.nombre)) ?? 999));
+    await s.setJSON("inv", inv);
+    await s.setJSON("catv", { v: CATALOGO_VERSION });
   }
   return inv;
 }

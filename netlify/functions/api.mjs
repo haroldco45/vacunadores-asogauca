@@ -26,9 +26,11 @@ async function store() {
       },
     };
   } else {
+    // En Netlify se abre el almacén en CADA consulta: el permiso de Blobs vence a los
+    // pocos minutos y no se puede reutilizar entre visitas.
     const { getStore } = await import("@netlify/blobs");
     const s = getStore({ name: "vacunacion-bajo-cauca", consistency: "strong" });
-    _store = {
+    return {
       get: (k) => s.get(k, { type: "json" }),
       setJSON: (k, v) => s.setJSON(k, v),
       delete: (k) => s.delete(k),

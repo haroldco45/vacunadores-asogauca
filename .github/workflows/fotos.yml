@@ -1,0 +1,32 @@
+# Robot de fotos: baja las fotos reales de Wikimedia Commons y arma la imagen
+# de vista previa (og.jpg) y los íconos. Corre solo al subir cambios en la lista
+# de fotos, o a mano desde la pestaña Actions.
+name: Fotos reales y vista previa
+on:
+  push:
+    branches: [main]
+    paths: [comun.js, scripts/fotos.py, .github/workflows/fotos.yml]
+  workflow_dispatch:
+    inputs:
+      forzar:
+        description: "Volver a bajar todas las fotos"
+        type: boolean
+        default: false
+permissions:
+  contents: write
+jobs:
+  fotos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: sudo apt-get install -y fonts-dejavu-core >/dev/null
+      - run: pip install pillow
+      - run: python scripts/fotos.py ${{ inputs.forzar && '--forzar' || '' }}
+      - name: Guardar fotos en el repositorio
+        run: |
+          git config user.name "robot-fotos"
+          git config user.email "robot-fotos@users.noreply.github.com"
+          git add img
+          git diff --cached --quiet || (git commit -m "Fotos reales y vista previa" && git push)

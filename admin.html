@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin Vacunación · Bajo Cauca</title>
+<meta name="description" content="Administración de inventario, pedidos y vacunadores del ciclo de vacunación 2026 en el Bajo Cauca.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f3d2e">
+<link rel="manifest" href="admin.webmanifest">
+<link rel="icon" href="img/icono-admin-192.png">
+<link rel="apple-touch-icon" href="img/icono-admin-192.png">
+<meta property="og:title" content="Admin Vacunación · Bajo Cauca">
+<meta property="og:description" content="Inventario, pedidos y vacunadores del Ciclo II 2026.">
+<meta property="og:image" content="https://vacunadores-asogauca.netlify.app/img/og-admin.jpg">
+<meta property="og:url" content="https://vacunadores-asogauca.netlify.app/admin.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .adm-nav{background:#fff;border-bottom:1px solid var(--linea);position:sticky;top:60px;z-index:25}
+  .adm-nav .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .adm-nav button{background:none;padding:14px 14px;font-weight:800;color:var(--gris);white-space:nowrap;border-bottom:3px solid transparent}
+  .adm-nav button.on{color:var(--verde);border-color:var(--sol)}
+  .adm-nav .cnt{display:inline-block;min-width:20px;padding:0 5px;margin-left:4px;border-radius:99px;background:var(--rojo);color:#fff;font-size:.72rem;line-height:20px}
+  body{padding-bottom:20px}
+  .login{min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden}
+  .login>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:zoom 20s ease-in-out infinite alternate}
+  .login::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(15,61,46,.55),rgba(8,28,20,.92))}
+  .login .tarjeta{position:relative;z-index:2;width:min(420px,92vw)}
+  .ent input{width:70px;padding:6px;text-align:center}
+  .equipo{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--linea);flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="login" id="login">
+  <img id="login-foto" alt="">
+  <div class="tarjeta">
+    <span class="chapa" data-t="admChapa">Coordinación</span>
+    <h1 style="font-size:2.4rem;color:var(--verde);margin:10px 0 4px" data-t="admTitulo">Admin Vacunación</h1>
+    <p class="sub" id="login-sub" data-t="admLoginSub">Ingrese la clave de administrador.</p>
+    <form id="f-login">
+      <label data-t="claveAdmin">Clave de administrador</label>
+      <input name="pin" type="password" inputmode="numeric" maxlength="10" required>
+      <button class="btn ancho" style="margin-top:14px" data-t="ingresar">Ingresar</button>
+    </form>
+    <div class="lang" style="margin-top:14px;background:var(--verde);width:max-content"><button data-l="es">ES</button><button data-l="en">EN</button></div>
+  </div>
+</div>
+
+<div id="app" class="oculto">
+<header class="top">
+  <div class="wrap">
+    <div class="marca"><b data-t="admTitulo">Admin Vacunación</b><small id="adm-hora"></small></div>
+    <div class="lang"><button data-l="es">ES</button><button data-l="en">EN</button></div>
+    <button class="btn-act" id="actualizar" data-t="actualizar">Actualizar</button>
+  </div>
+</header>
+<nav class="adm-nav"><div class="wrap">
+  <button class="on" data-tab="resumen" data-t="tResumen">Resumen</button>
+  <button data-tab="pedidos"><span data-t="tPedidos">Pedidos</span><span class="cnt oculto" id="cnt-ped"></span></button>
+  <button data-tab="inventario" data-t="tInventario">Inventario</button>
+  <button data-tab="vacunadores"><span data-t="tVacunadores">Vacunadores</span><span class="cnt oculto" id="cnt-vac"></span></button>
+  <button data-tab="avisos" data-t="tAvisos">Avisos</button>
+  <button data-tab="ajustes" data-t="tAjustes">Ajustes</button>
+</div></nav>
+
+<main class="wrap">
+  <!-- RESUMEN -->
+  <section class="vista on" id="t-resumen"><div class="bloque">
+    <h2 data-t="tResumen">Resumen</h2><p class="sub" id="res-ciclo"></p>
+    <div class="grid g4" id="kpis"></div>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="tarjeta"><h3 style="font-size:1.4rem;color:var(--verde);margin-bottom:10px" data-t="bajoStock">Productos por debajo del mínimo</h3><div id="res-bajo"></div></div>
+      <div class="tarjeta"><h3 style="font-size:1.4rem;color:var(--verde);margin-bottom:10px" data-t="urgentes">Pedidos urgentes por atender</h3><div id="res-urg"></div></div>
+      <div class="tarjeta"><h3 style="font-size:1.4rem;color:var(--verde);margin-bottom:10px" data-t="masPedidos">Lo más despachado</h3><div class="barras" id="res-top"></div></div>
+      <div class="tarjeta"><h3 style="font-size:1.4rem;color:var(--verde);margin-bottom:10px" data-t="porMunicipio">Pedidos por municipio</h3><div class="barras" id="res-mun"></div></div>
+    </div>
+  </div></section>
+
+  <!-- PEDIDOS -->
+  <section class="vista" id="t-pedidos"><div class="bloque">
+    <h2 data-t="tPedidos">Pedidos</h2><p class="sub" data-t="pedAdmSub">Apruebe, despache y marque como entregado. Al despachar se descuenta del inventario.</p>
+    <div class="buscar">
+      <select id="fil-est"></select>
+      <input id="fil-txt" data-tp="buscarPh">
+      <button class="btn linea chico" id="csv-ped" data-t="exportar">Exportar Excel (CSV)</button>
+    </div>
+    <div class="grid g2" id="adm-pedidos"></div>
+  </div></section>
+
+  <!-- INVENTARIO -->
+  <section class="vista" id="t-inventario"><div class="bloque">
+    <h2 data-t="tInventario">Inventario</h2><p class="sub" data-t="invSub">Cargue las existencias reales. Los vacunadores solo ven si hay, si quedan pocas o si no hay.</p>
+    <div class="buscar">
+      <input id="inv-txt" data-tp="buscarProd">
+      <button class="btn sol chico" id="nuevo-prod" data-t="nuevoProd">Nuevo producto</button>
+      <button class="btn linea chico" id="csv-inv" data-t="exportar">Exportar Excel (CSV)</button>
+    </div>
+    <div class="tarjeta tabla-wrap"><table class="tabla" id="tabla-inv"></table></div>
+    <h3 style="font-size:1.5rem;color:var(--verde);margin:22px 0 10px" data-t="kardex">Movimientos (kárdex)</h3>
+    <div class="tarjeta tabla-wrap"><table class="tabla" id="tabla-mov"></table></div>
+  </div></section>
+
+  <!-- VACUNADORES -->
+  <section class="vista" id="t-vacunadores"><div class="bloque">
+    <h2 data-t="tVacunadores">Vacunadores</h2><p class="sub" data-t="vacSub">Apruebe a los que se registran, vea sus pedidos y los equipos que tienen a cargo.</p>
+    <div class="buscar">
+      <select id="vac-est"></select>
+      <input id="vac-txt" data-tp="buscarVac">
+      <button class="btn linea chico" id="csv-vac" data-t="exportar">Exportar Excel (CSV)</button>
+    </div>
+    <div class="grid g2" id="adm-vacs"></div>
+  </div></section>
+
+  <!-- AVISOS -->
+  <section class="vista" id="t-avisos"><div class="bloque">
+    <h2 data-t="tAvisos">Avisos</h2><p class="sub" data-t="avSub">Lo que escriba aquí les aparece a todos los vacunadores en su app: programación de veredas, puntos de entrega, cambios.</p>
+    <form class="tarjeta" id="f-aviso" style="max-width:640px">
+      <label data-t="avTitulo">Título</label><input name="titulo" required maxlength="100">
+      <label data-t="avTexto">Mensaje</label><textarea name="texto" rows="4" required maxlength="600"></textarea>
+      <button class="btn" style="margin-top:12px" data-t="publicar">Publicar aviso</button>
+    </form>
+    <div class="grid g2" id="adm-avisos" style="margin-top:16px"></div>
+  </div></section>
+
+  <!-- AJUSTES -->
+  <section class="vista" id="t-ajustes"><div class="bloque">
+    <h2 data-t="tAjustes">Ajustes</h2>
+    <form class="tarjeta" id="f-ajustes" style="max-width:640px">
+      <label data-t="ajCoord">Nombre del coordinador</label><input name="coordinador">
+      <label data-t="ajWa">WhatsApp de la coordinación (para que los vacunadores avisen sus pedidos)</label><input name="whatsapp" inputmode="tel">
+      <label style="display:flex;gap:10px;align-items:center;margin-top:16px"><input type="checkbox" name="aprobacionAutomatica" style="width:auto"> <span data-t="ajAuto">Aprobar automáticamente a los vacunadores nuevos</span></label>
+      <button class="btn" style="margin-top:14px" data-t="guardar">Guardar</button>
+    </form>
+    <div class="tarjeta" style="max-width:640px;margin-top:16px">
+      <h3 style="font-size:1.3rem;color:var(--verde)" data-t="ajLink">Enlace para los vacunadores</h3>
+      <p class="sub" data-t="ajLinkSub">Compártalo por WhatsApp para que se registren.</p>
+      <div class="mini"><input id="link-vac" readonly style="flex:1"><button class="btn wa chico" id="compartir" data-t="compartirWa">Compartir por WhatsApp</button></div>
+    </div>
+    <button class="btn linea" style="margin-top:16px" id="salir" data-t="salir">Salir</button>
+  </div></section>
+</main>
+<footer class="pie wrap"><p data-t="pie">Desarrollada por Vibras Positivas HM · Caucasia, Antioquia · Derechos reservados</p></footer>
+</div>
+
+<div class="velo" id="velo"><div class="hoja" id="hoja"></div></div>
+
+<script src="i18n.js"></script>
+<script src="comun.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

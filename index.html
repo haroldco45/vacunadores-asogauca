@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vacunadores Bajo Cauca · Ciclo II 2026</title>
+<meta name="description" content="App de los vacunadores del Bajo Cauca para el segundo ciclo de vacunación 2026 contra aftosa, brucelosis, rabia de origen silvestre y carbón: registro, pedidos de inyectores, repuestos e insumos.">
+<meta name="theme-color" content="#0f3d2e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="img/icono-192.png">
+<link rel="apple-touch-icon" href="img/icono-192.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vibras Positivas HM">
+<meta property="og:title" content="Vacunadores Bajo Cauca · Ciclo II 2026">
+<meta property="og:description" content="Regístrese y pida inyectores, repuestos e insumos para el ciclo de vacunación del 27 de octubre al 16 de diciembre de 2026.">
+<meta property="og:url" content="https://vacunadores-asogauca.netlify.app/">
+<meta property="og:image" content="https://vacunadores-asogauca.netlify.app/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://vacunadores-asogauca.netlify.app/img/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="marca"><b data-t="marca">Vacunadores Bajo Cauca</b><small data-t="marcaSub">Ciclo II 2026 · Asogauca – Fedegán</small></div>
+    <div class="lang"><button data-l="es">ES</button><button data-l="en">EN</button></div>
+    <button class="btn-act" id="actualizar" data-t="actualizar">Actualizar</button>
+  </div>
+</header>
+<div class="cinta"><div id="cinta"></div></div>
+
+<main>
+  <!-- INICIO -->
+  <section class="vista on" id="v-inicio">
+    <div class="heroe">
+      <div class="fotos" id="fotos"></div>
+      <div class="wrap">
+        <span class="chapa" id="fase">Ciclo en curso</span>
+        <h1 data-t="heroTitulo">Vacunadores del Bajo Cauca</h1>
+        <p data-t="heroTexto">Pida aquí sus inyectores, repuestos e insumos para el segundo ciclo de vacunación contra aftosa, brucelosis, rabia de origen silvestre y carbón.</p>
+        <div class="cuenta">
+          <div><span class="num" id="c-faltan">0</span><small data-t="diasFaltan">días para el cierre</small></div>
+          <div><span class="num" id="c-dia">0</span><small data-t="diaCiclo">día del ciclo</small></div>
+          <div><span class="num" id="c-avance">0%</span><small data-t="avance">avance del tiempo</small></div>
+        </div>
+        <div class="barra"><i id="c-barra"></i></div>
+        <div class="hora" id="hora"></div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="bloque" id="zona-acceso">
+        <h2 data-t="accesoTitulo">Regístrese o ingrese</h2>
+        <p class="sub" data-t="accesoSub">Cada vacunador se registra una sola vez con su cédula y una clave de 4 números.</p>
+        <div class="tarjeta" style="max-width:620px">
+          <div class="pestanas"><button class="on" data-acc="registro" data-t="registrarme">Registrarme</button><button data-acc="ingreso" data-t="ingresar">Ingresar</button></div>
+          <form id="f-registro">
+            <label data-t="nombre">Nombre completo</label><input name="nombre" required autocomplete="name">
+            <div class="fila">
+              <div><label data-t="cedula">Cédula</label><input name="cedula" inputmode="numeric" required></div>
+              <div><label data-t="celular">Celular (WhatsApp)</label><input name="celular" inputmode="tel" required></div>
+            </div>
+            <div class="fila">
+              <div><label data-t="municipio">Municipio</label><select name="municipio" id="sel-mun"></select></div>
+              <div><label data-t="vereda">Vereda o zona asignada</label><input name="vereda"></div>
+            </div>
+            <label data-t="certificado">Certificado de competencia (opcional)</label><input name="certificado" data-tp="certificadoPh">
+            <label data-t="clave">Cree su clave (4 a 6 números)</label><input name="pin" type="password" inputmode="numeric" maxlength="6" required>
+            <button class="btn ancho" style="margin-top:16px" data-t="registrarme">Registrarme</button>
+          </form>
+          <form id="f-ingreso" class="oculto">
+            <label data-t="cedula">Cédula</label><input name="cedula" inputmode="numeric" required>
+            <label data-t="claveSola">Clave</label><input name="pin" type="password" inputmode="numeric" maxlength="6" required>
+            <button class="btn ancho" style="margin-top:16px" data-t="ingresar">Ingresar</button>
+            <p class="sub" style="margin-top:12px" data-t="olvido">¿Olvidó la clave? Pídale a la coordinación que se la cambie.</p>
+          </form>
+        </div>
+      </div>
+
+      <div class="bloque oculto" id="zona-vac">
+        <div class="tarjeta estado-vac">
+          <div class="avatar" id="vac-ini">V</div>
+          <div style="flex:1;min-width:200px"><h2 id="vac-nombre" style="font-size:1.7rem"></h2><div class="sub" id="vac-datos" style="margin:0"></div></div>
+          <span class="pill" id="vac-estado"></span>
+          <button class="btn linea chico" id="salir" data-t="salir">Salir</button>
+        </div>
+        <div class="banner esp oculto" id="vac-espera" style="margin-top:14px" data-t="espera">Su registro está pendiente. La coordinación lo debe aprobar antes de que pueda hacer pedidos.</div>
+        <div class="grid g4" style="margin-top:14px">
+          <div class="kpi"><span class="num" id="k-pend">0</span><small data-t="kPend">pedidos en trámite</small></div>
+          <div class="kpi"><span class="num" id="k-ent">0</span><small data-t="kEnt">pedidos recibidos</small></div>
+          <div class="kpi"><span class="num" id="k-eq">0</span><small data-t="kEq">equipos a mi cargo</small></div>
+        </div>
+        <button class="btn sol" style="margin-top:16px" data-ir="pedir" data-t="hacerPedido">Hacer un pedido</button>
+      </div>
+
+      <div class="bloque">
+        <h2 data-t="avisosTitulo">Avisos de la coordinación</h2>
+        <p class="sub" data-t="avisosSub">Programación de veredas, puntos de entrega y novedades del ciclo.</p>
+        <div class="grid g2" id="avisos"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PEDIR -->
+  <section class="vista" id="v-pedir">
+    <div class="wrap bloque">
+      <h2 data-t="pedirTitulo">Pedir productos</h2>
+      <p class="sub" data-t="pedirSub">Elija la cantidad de cada producto y envíe el pedido. La coordinación lo aprueba y le avisa cuando esté listo.</p>
+      <div class="chips" id="cats"></div>
+      <div class="grid g3" id="catalogo"></div>
+    </div>
+  </section>
+
+  <!-- MIS PEDIDOS -->
+  <section class="vista" id="v-pedidos">
+    <div class="wrap bloque">
+      <h2 data-t="misPedidos">Mis pedidos</h2>
+      <p class="sub" data-t="misPedidosSub">Aquí ve en qué va cada pedido.</p>
+      <div class="grid g2" id="lista-pedidos"></div>
+      <h2 style="margin-top:28px" data-t="misEquipos">Equipos a mi cargo</h2>
+      <p class="sub" data-t="misEquiposSub">Inyectores y equipos que le entregaron. Al terminar el ciclo se devuelven a la coordinación.</p>
+      <div class="tarjeta" id="equipos"></div>
+    </div>
+  </section>
+
+  <!-- CICLO -->
+  <section class="vista" id="v-ciclo">
+    <div class="wrap bloque">
+      <h2 data-t="cicloTitulo">Calendario del ciclo en el Bajo Cauca</h2>
+      <p class="sub" id="ciclo-res"></p>
+      <div class="grid g2">
+        <div class="tarjeta">
+          <h3 style="font-size:1.5rem;color:var(--verde);margin-bottom:12px" data-t="fechasClave">Fechas clave</h3>
+          <div class="linea-t" id="linea"></div>
+        </div>
+        <div class="tarjeta">
+          <h3 style="font-size:1.5rem;color:var(--verde);margin-bottom:8px" data-t="quienTitulo">Quién vacuna y dónde</h3>
+          <p data-t="quienTexto">El ciclo lo ejecuta Fedegán – FNG con las organizaciones ganaderas autorizadas. En el Bajo Cauca lo realiza Asogauca, en el proyecto local de Caucasia.</p>
+          <h3 style="font-size:1.2rem;color:var(--verde);margin:14px 0 8px" data-t="municipiosTitulo">Municipios del Bajo Cauca</h3>
+          <div class="mun" id="municipios"></div>
+          <p class="sub" style="margin-top:12px" data-t="veredasNota">La programación por veredas la publica la coordinación en Avisos.</p>
+        </div>
+      </div>
+      <h2 style="margin-top:28px" data-t="biologicos">Qué se vacuna</h2>
+      <div class="grid g2" id="biologicos" style="margin-top:12px"></div>
+      <p class="sub" style="margin-top:14px" data-t="cicloFuente">Fuente: Resolución ICA 00019881 de 2026. Siga siempre las instrucciones de la coordinación y del ICA.</p>
+    </div>
+  </section>
+</main>
+
+<div class="carrito" id="carrito">
+  <div><b id="car-n">0</b> <span data-t="productosEnPedido">productos en el pedido</span></div>
+  <button class="btn lima" id="car-ver" data-t="revisarEnviar">Revisar y enviar</button>
+</div>
+
+<div class="velo" id="velo">
+  <div class="hoja">
+    <button class="cerrar" id="cerrar-hoja" data-t="cerrar">Cerrar</button>
+    <h2 data-t="tuPedido">Su pedido</h2>
+    <div id="resumen" style="margin:12px 0"></div>
+    <label data-t="urgencia">¿Qué tan urgente es?</label>
+    <div class="opciones">
+      <label><input type="radio" name="urg" value="normal" checked><span data-t="normal">Normal</span></label>
+      <label><input type="radio" name="urg" value="urgente"><span data-t="urgente">Urgente</span></label>
+    </div>
+    <label data-t="entrega">¿Dónde lo recibe?</label>
+    <input id="entrega" data-tp="entregaPh">
+    <label data-t="nota">Nota (por ejemplo, qué se le dañó al inyector)</label>
+    <textarea id="nota" rows="3"></textarea>
+    <button class="btn ancho sol" style="margin-top:16px" id="enviar" data-t="enviarPedido">Enviar pedido</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="on" data-ir="inicio" data-t="nInicio">Inicio</button>
+  <button data-ir="pedir" data-t="nPedir">Pedir</button>
+  <button data-ir="pedidos"><span data-t="nPedidos">Mis pedidos</span><span class="cnt oculto" id="nav-cnt"></span></button>
+  <button data-ir="ciclo" data-t="nCiclo">Ciclo</button>
+</nav>
+
+<footer class="pie wrap">
+  <p data-t="pie">Desarrollada por Vibras Positivas HM · Caucasia, Antioquia · Derechos reservados</p>
+  <p style="margin-top:8px"><span data-t="fotosPie">Fotos:</span> <span id="creditos"></span></p>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="comun.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

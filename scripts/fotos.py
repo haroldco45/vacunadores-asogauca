@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(RAIZ, "img")
 os.makedirs(IMG, exist_ok=True)
-UA = "VibrasPositivasHM-VacunadoresBot/1.0 (https://vacunadores-asogauca.netlify.app; contacto WhatsApp 3117700431)"
+UA = "VibrasPositivasHM-VacunadoresBot/1.0 (https://dota-vacu.netlify.app; contacto WhatsApp 3117700431)"
 
 # Lee la lista de fotos directamente de comun.js para no repetirla
 texto = open(os.path.join(RAIZ, "comun.js"), encoding="utf-8").read()
@@ -114,10 +114,10 @@ def main():
     hero = cache.get("hero1") or next(iter(cache.values()))
     tarjeta(hero, os.path.join(IMG, "og.jpg"), "CICLO II 2026 · 27 OCT – 16 DIC",
             "Vacunadores\ndel Bajo Cauca", "Registro y pedidos de inyectores, repuestos e insumos",
-            "vacunadores-asogauca.netlify.app")
+            "dota-vacu.netlify.app")
     tarjeta(cache.get("hero2", hero), os.path.join(IMG, "og-admin.jpg"), "COORDINACIÓN",
             "Admin Vacunación\nBajo Cauca", "Inventario, pedidos y vacunadores del ciclo",
-            "vacunadores-asogauca.netlify.app/admin.html")
+            "dota-vacu.netlify.app/admin.html")
     for t in (192, 512):
         icono(hero, f"icono-{t}.png", "VB", t)
         icono(cache.get("hero2", hero), f"icono-admin-{t}.png", "AD", t)
